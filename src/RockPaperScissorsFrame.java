@@ -57,11 +57,6 @@ public class RockPaperScissorsFrame extends JFrame
 
     ArrayList<Integer> playerChoiceStats = new ArrayList<>();
 
-
-    int timesPlayerChoseRock;
-    int timesPlayerChosePaper;
-    int timesPlayerChoseScissors;
-    int leastUsed;
     int lowestIndex = 0;
 
     String computerStrategyChoice;
@@ -120,27 +115,26 @@ public class RockPaperScissorsFrame extends JFrame
     private void computerChooses() {
         Random randomGenerator = new Random();
 
-        // this code would go inside your for-loop:
-        int randNumber = randomGenerator.nextInt(5);
+        int randNumber = randomGenerator.nextInt(10);
         switch(randNumber) {
-            case 1:
+            case 0, 1: // 20% probability of running
                 leastUsedStrategy();
                 computerStrategyChoice = "Computer: Least Used)";
                 break;
-            case 2:
+            case 2, 3: // 20% probability of running
                 mostUsedStrategy();
                 computerStrategyChoice = "Computer: Most Used)";
                 break;
-            case 3:
+            case 4, 5: // 20% probability of running
                 lastUsedStrategy();
                 computerStrategyChoice = "Computer: Last Used)";
                 break;
-            case 4:
+            case 6, 7, 8: // 30% probability of running
                 Strategy randomStrategy = new RandomStrategy();
                 computerMove = randomStrategy.getMove(playerMove);
                 computerStrategyChoice = "Computer: Random)";
                 break;
-            case 5:
+            case 9: // 10% probability of running
                 Strategy cheatStrategy = new Cheat();
                 computerMove = cheatStrategy.getMove(playerMove);
                 computerStrategyChoice = "Computer: Cheat)";
