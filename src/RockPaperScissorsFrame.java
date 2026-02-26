@@ -114,43 +114,30 @@ public class RockPaperScissorsFrame extends JFrame
 
     private void computerChooses() {
         Random randomGenerator = new Random();
-
-        int randNumber = randomGenerator.nextInt(10);
-        switch(randNumber) {
-            case 0, 1: // 20% probability of running
-                leastUsedStrategy();
-                computerStrategyChoice = "Computer: Least Used)";
-                break;
-            case 2, 3: // 20% probability of running
-                mostUsedStrategy();
-                computerStrategyChoice = "Computer: Most Used)";
-                break;
-            case 4, 5: // 20% probability of running
-                lastUsedStrategy();
-                computerStrategyChoice = "Computer: Last Used)";
-                break;
-            case 6, 7, 8: // 30% probability of running
-                Strategy randomStrategy = new RandomStrategy();
-                computerMove = randomStrategy.getMove(playerMove);
-                computerStrategyChoice = "Computer: Random)";
-                break;
-            case 9: // 10% probability of running
-                Strategy cheatStrategy = new Cheat();
-                computerMove = cheatStrategy.getMove(playerMove);
-                computerStrategyChoice = "Computer: Cheat)";
-                break;
-            default:
-                break;
+        int strategyPercent = randomGenerator.nextInt(100);
+        if (strategyPercent < 21) { // 10 percent (0-10)
+            leastUsedStrategy();
+            computerStrategyChoice = "Computer: Least Used)";
+        }
+        else if (strategyPercent < 41) {
+            mostUsedStrategy();
+            computerStrategyChoice = "Computer: Most Used)";
+        }
+        else if (strategyPercent < 61) {
+            lastUsedStrategy();
+            computerStrategyChoice = "Computer: Last Used)";
+        }
+        else if (strategyPercent < 71) {
+            Strategy randomStrategy = new RandomStrategy();
+            computerMove = randomStrategy.getMove(playerMove);
+            computerStrategyChoice = "Computer: Random)";
+        }
+        else {
+            Strategy cheatStrategy = new Cheat();
+            computerMove = cheatStrategy.getMove(playerMove);
+            computerStrategyChoice = "Computer: Cheat)";
         }
     }
-/*
-
-        ArrayList<Consumer<Void>> listOfMethods = new ArrayList<>();
-        listOfMethods.add(1, Random.RandomStrategy);
-        return computerStrategyChoice;
-    }
-
- */
 
     private void createStatsPanel()
     {
@@ -194,12 +181,12 @@ public class RockPaperScissorsFrame extends JFrame
 
     private void createDisplayPanel()
     {
-        displayPnl = new JPanel();                                                  // initialize display panel
+        displayPnl = new JPanel();                                             // initialize display panel
         displayTA = new JTextArea(14, 24);                       // set size of display -- is dependent on font and size of font!
-        displayTA.setEditable(false);                                         // make sure the user can't edit the display
-        displayTA.setFont(new Font("Verdana", Font.PLAIN, 17)); // set font, font style, and font size for display
-        scrollbar = new JScrollPane(displayTA);                               // make the display scrollable
-        displayPnl.add(scrollbar);                                                  // add scrollbar to display panel
+        displayTA.setEditable(false);                                          // make sure the user can't edit the display
+        displayTA.setFont(new Font("Verdana", Font.PLAIN, 17));    // set font, font style, and font size for display
+        scrollbar = new JScrollPane(displayTA);                                // make the display scrollable
+        displayPnl.add(scrollbar);                                             // add scrollbar to display panel
     }
 
 
@@ -209,11 +196,11 @@ public class RockPaperScissorsFrame extends JFrame
         buttonPnl.setLayout(new GridLayout(1, 4));
         buttonPnl.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 
-        rockButton = new JButton("ROCK");
         tooBigRock = new ImageIcon("src/rock.jpg");
         Image bigRkImage = tooBigRock.getImage();
         Image smallRkImage = bigRkImage.getScaledInstance(80, 60, Image.SCALE_DEFAULT);
         ImageIcon rock = new ImageIcon(smallRkImage);
+
         rockButton = new JButton(rock);
         rockButton.addActionListener((ActionEvent aeRock) -> {
             playerMove = "R";
@@ -221,7 +208,6 @@ public class RockPaperScissorsFrame extends JFrame
             computerChooses();
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
-            // computerChoice = computerChooses();
             totalGamesCnt++;
             playerWinsTA.setText(String.valueOf(playerWinsCnt));
             computerWinsTA.setText(String.valueOf(computerWinsCnt));
@@ -231,11 +217,9 @@ public class RockPaperScissorsFrame extends JFrame
         });
 
         tooBigPaper = new ImageIcon("src/paper.jpg");
-        // HAVE TO RESIZE THE IMAGE
         Image bigPpImage = tooBigPaper.getImage();
         Image smallPpImage = bigPpImage.getScaledInstance(80, 60, Image.SCALE_DEFAULT);
         ImageIcon paper = new ImageIcon(smallPpImage);
-        // resizing complete
 
         paperButton = new JButton(paper);
         paperButton.addActionListener((ActionEvent aeScissors) -> {
@@ -245,12 +229,19 @@ public class RockPaperScissorsFrame extends JFrame
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
             playerChoiceStats.set(1, playerChoiceStats.get(1) + 1);
+            totalGamesCnt++;
+            playerWinsTA.setText(String.valueOf(playerWinsCnt));
+            computerWinsTA.setText(String.valueOf(computerWinsCnt));
+            tiesTA.setText(String.valueOf(tiesCnt));
+            totalGamesTA.setText(String.valueOf(totalGamesCnt));
+            playerChoiceStats.set(0, playerChoiceStats.getFirst() + 1);
         });
 
         tooBigScissors = new ImageIcon("src/scissors.jpg");
         Image bigSsImage = tooBigScissors.getImage();
         Image smallSsImage = bigSsImage.getScaledInstance(80, 60, Image.SCALE_DEFAULT);
         ImageIcon scissors = new ImageIcon(smallSsImage);
+
         scissorsButton = new JButton(scissors);
         scissorsButton.addActionListener((ActionEvent ae1) -> {
             playerMove = "S";
@@ -259,8 +250,13 @@ public class RockPaperScissorsFrame extends JFrame
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
             playerChoiceStats.set(2, playerChoiceStats.get(2) + 1);
+            totalGamesCnt++;
+            playerWinsTA.setText(String.valueOf(playerWinsCnt));
+            computerWinsTA.setText(String.valueOf(computerWinsCnt));
+            tiesTA.setText(String.valueOf(tiesCnt));
+            totalGamesTA.setText(String.valueOf(totalGamesCnt));
+            playerChoiceStats.set(0, playerChoiceStats.getFirst() + 1);
         });
-
 
 
         // make the quit button actionable and set font, font style, and font size
