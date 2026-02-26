@@ -46,20 +46,14 @@ public class RockPaperScissorsFrame extends JFrame
     ImageIcon tooBigPaper;
     ImageIcon tooBigScissors;
 
-    // determineGameResult
-    String winner;
-
-
     ArrayList<String> r_p_OR_s = new ArrayList<>();
     String computerMove;
     String playerMove;
     String playersLastMove;
 
     ArrayList<Integer> playerChoiceStats = new ArrayList<>();
-
-    int lowestIndex = 0;
-
     String computerStrategyChoice;
+    int lowestIndex = 0;
 
     // HERE'S THE CODE THAT RUNS THE GAME
     public static void main(String[] args)
