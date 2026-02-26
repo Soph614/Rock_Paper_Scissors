@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class RockPaperScissorsFrame extends JFrame
@@ -45,12 +46,14 @@ public class RockPaperScissorsFrame extends JFrame
     ImageIcon tooBigPaper;
     ImageIcon tooBigScissors;
 
-    Random rnd = new Random();
+    // determineGameResult
+    String winner;
+
+
     ArrayList<String> r_p_OR_s = new ArrayList<>();
-    int index;
-    String computerChoice;
-    String playerChoice;
+    String computerMove;
     String playerMove;
+    String playersLastMove;
 
     ArrayList<Integer> playerChoiceStats = new ArrayList<>();
 
@@ -59,7 +62,7 @@ public class RockPaperScissorsFrame extends JFrame
     int timesPlayerChosePaper;
     int timesPlayerChoseScissors;
     int leastUsed;
-    int lowestIndex;
+    int lowestIndex = 0;
 
     String computerStrategyChoice;
 
@@ -86,11 +89,11 @@ public class RockPaperScissorsFrame extends JFrame
         mainPnl = new JPanel();
         mainPnl.setLayout(new BorderLayout());
 
-        createDisplayPanel();
-        mainPnl.add(displayPnl, BorderLayout.NORTH);
-
         createStatsPanel();
-        mainPnl.add(statsPnl, BorderLayout.CENTER);
+        mainPnl.add(statsPnl, BorderLayout.NORTH);
+
+        createDisplayPanel();
+        mainPnl.add(displayPnl, BorderLayout.CENTER);
 
         createControlPanel();
         mainPnl.add(buttonPnl, BorderLayout.SOUTH);
@@ -121,26 +124,26 @@ public class RockPaperScissorsFrame extends JFrame
         int randNumber = randomGenerator.nextInt(5);
         switch(randNumber) {
             case 1:
-                String leastUsedStrategy = leastUsedStrategy();
-                computerChoice = leastUsedStrategy();
-                computerStrategyChoice = "Least Used";
+                leastUsedStrategy();
+                computerStrategyChoice = "Computer: Least Used)";
                 break;
             case 2:
-                computerChoice = mostUsedStrategy();
-                computerStrategyChoice = "Most Used";
+                mostUsedStrategy();
+                computerStrategyChoice = "Computer: Most Used)";
                 break;
             case 3:
-                computerChoice = lastUsedStrategy();
-                computerStrategyChoice = "Last Used";
+                lastUsedStrategy();
+                computerStrategyChoice = "Computer: Last Used)";
                 break;
             case 4:
-                computerChoice = RandomStrategy.RandomStrategy();
-                computerStrategyChoice = "Random";
+                Strategy randomStrategy = new RandomStrategy();
+                computerMove = randomStrategy.getMove(playerMove);
+                computerStrategyChoice = "Computer: Random)";
                 break;
             case 5:
-                Strategy cheatStrategy = new CheatStrategyDemo;
-                computerChoice = cheatStrategy.getMove(playerMove);
-                computerStrategyChoice = "Cheat";
+                Strategy cheatStrategy = new Cheat();
+                computerMove = cheatStrategy.getMove(playerMove);
+                computerStrategyChoice = "Computer: Cheat)";
                 break;
             default:
                 break;
@@ -214,15 +217,16 @@ public class RockPaperScissorsFrame extends JFrame
 
         rockButton = new JButton("ROCK");
         tooBigRock = new ImageIcon("src/rock.jpg");
-        // HAVE TO RESIZE THE IMAGE
-        // got idea from trolologuy, https://stackoverflow.com/a/18335435 on 02/16/2026... License - CC BY-SA 3.0
         Image bigRkImage = tooBigRock.getImage();
         Image smallRkImage = bigRkImage.getScaledInstance(80, 60, Image.SCALE_DEFAULT);
         ImageIcon rock = new ImageIcon(smallRkImage);
-        // resizing complete
         rockButton = new JButton(rock);
-        rockButton.addActionListener((ActionEvent aeRock) -> {                      // make the button clickable
-            playerChoice = "R";
+        rockButton.addActionListener((ActionEvent aeRock) -> {
+            playerMove = "R";
+            playersLastMove = "R";
+            computerChooses();
+            determineAndPrintGameResult();
+            displayTA.append(computerStrategyChoice + "\n");
             // computerChoice = computerChooses();
             totalGamesCnt++;
             playerWinsTA.setText(String.valueOf(playerWinsCnt));
@@ -230,9 +234,6 @@ public class RockPaperScissorsFrame extends JFrame
             tiesTA.setText(String.valueOf(tiesCnt));
             totalGamesTA.setText(String.valueOf(totalGamesCnt));
             playerChoiceStats.set(0, playerChoiceStats.getFirst() + 1);
-            displayTA.append(String.valueOf(playerChoiceStats.getFirst()));
-            String toBeAppended = leastUsedStrategy();
-            displayTA.append(toBeAppended);
         });
 
         tooBigPaper = new ImageIcon("src/paper.jpg");
@@ -244,22 +245,26 @@ public class RockPaperScissorsFrame extends JFrame
 
         paperButton = new JButton(paper);
         paperButton.addActionListener((ActionEvent aeScissors) -> {
+            playerMove = "P";
+            playersLastMove = "P";
+            computerChooses();
+            determineAndPrintGameResult();
+            displayTA.append(computerStrategyChoice + "\n");
             playerChoiceStats.set(1, playerChoiceStats.get(1) + 1);
-            displayTA.append(String.valueOf(playerChoiceStats.get(1)));
         });
 
-
         tooBigScissors = new ImageIcon("src/scissors.jpg");
-        // HAVE TO RESIZE THE IMAGE
-        // got idea from trolologuy, https://stackoverflow.com/a/18335435 on 02/16/2026... License - CC BY-SA 3.0
         Image bigSsImage = tooBigScissors.getImage();
         Image smallSsImage = bigSsImage.getScaledInstance(80, 60, Image.SCALE_DEFAULT);
         ImageIcon scissors = new ImageIcon(smallSsImage);
-        // resizing complete
         scissorsButton = new JButton(scissors);
         scissorsButton.addActionListener((ActionEvent ae1) -> {
+            playerMove = "S";
+            playersLastMove = "S";
+            computerChooses();
+            determineAndPrintGameResult();
+            displayTA.append(computerStrategyChoice + "\n");
             playerChoiceStats.set(2, playerChoiceStats.get(2) + 1);
-            displayTA.append(String.valueOf(playerChoiceStats.get(2)));
         });
 
 
@@ -278,11 +283,85 @@ public class RockPaperScissorsFrame extends JFrame
 
     }
 
-    private String leastUsedStrategy() {
+    private void determineAndPrintGameResult() {
+        if (computerMove.equals("R") && playerMove.equals("R")) {
+            tiesCnt++;
+            displayTA.append("Rock and rock. (It's a tie! ");
+            tiesTA.setText(String.valueOf(tiesCnt));
+        }
+        else if (computerMove.equals("R") && playerMove.equals("P")) {
+            playerWinsCnt++;
+            displayTA.append("Paper wraps rock. (Player wins! ");
+            playerWinsTA.setText(String.valueOf(playerWinsCnt));
+        }
+        else if (computerMove.equals("R") && playerMove.equals("S")) {
+            computerWinsCnt++;
+            displayTA.append("Rock smashes scissors. (Computer wins! ");
+            computerWinsTA.setText(String.valueOf(computerWinsCnt));
+        }
+        else if (computerMove.equals("P") && playerMove.equals("R")) {
+            displayTA.append("Paper wraps rock. (Computer wins! ");
+            computerWinsCnt++;
+            computerWinsTA.setText(String.valueOf(computerWinsCnt));
+        }
+        else if (computerMove.equals("P") && playerMove.equals("P")) {
+            displayTA.append("Paper and paper. (It's a tie! ");
+            tiesCnt++;
+            tiesTA.setText(String.valueOf(tiesCnt));
+        }
+        else if (computerMove.equals("P") && playerMove.equals("S")) {
+            displayTA.append("Scissors cut paper. (Player wins! ");
+            playerWinsCnt++;
+            playerWinsTA.setText(String.valueOf(playerWinsCnt));
+        }
+        else if (computerMove.equals("S") && playerMove.equals("R")) {
+            displayTA.append("Rock smashes scissors. (Player wins! ");
+            playerWinsCnt++;
+            playerWinsTA.setText(String.valueOf(playerWinsCnt));
+        }
+        else if (computerMove.equals("S") && playerMove.equals("P")) {
+            displayTA.append("Scissors cut paper. (Computer wins! ");
+            computerWinsCnt++;
+            computerWinsTA.setText(String.valueOf(computerWinsCnt));
+        }
+        else if (computerMove.equals("S") && playerMove.equals("S")) {
+            displayTA.append("Scissors and scissors. (It's a tie! ");
+            tiesCnt++;
+            tiesTA.setText(String.valueOf(tiesCnt));
+        }
+    }
+
+    private void lastUsedStrategy() {
+        computerMove = playersLastMove;
+    }
+
+    private void leastUsedStrategy() {
 
         if (!playerChoiceStats.isEmpty()) {
-            int leastUsed = playerChoiceStats.getFirst();
-            int lowestIndex = 0;
+            int leastUsed = Collections.min(playerChoiceStats);
+
+            for (int s = 1; s < playerChoiceStats.size(); s++){
+                int curValue = playerChoiceStats.get(s);
+                if (curValue < leastUsed) {
+                    leastUsed = curValue;
+                    lowestIndex = s;
+                }
+                if (lowestIndex == 0) {
+                    computerMove = "R";
+                }
+                if (lowestIndex == 1) {
+                    computerMove = "P";
+                }
+                if (lowestIndex == 2){
+                    computerMove = "S";
+                }
+            }
+        }
+    }
+
+    private void mostUsedStrategy() {
+        if (!playerChoiceStats.isEmpty()) {
+            int leastUsed = Collections.max(playerChoiceStats);
 
             for (int s = 1; s < playerChoiceStats.size(); s++){
                 int curValue = playerChoiceStats.get(s);
@@ -290,8 +369,16 @@ public class RockPaperScissorsFrame extends JFrame
                     leastUsed = curValue;
                     lowestIndex = s;
                 }
+                if (lowestIndex == 0) {
+                    computerMove = "R";
+                }
+                if (lowestIndex == 1) {
+                    computerMove = "P";
+                }
+                if (lowestIndex == 2){
+                    computerMove = "S";
+                }
             }
         }
-        return "lowest used = " + leastUsed + " indexOf = " + lowestIndex;
     }
 }
