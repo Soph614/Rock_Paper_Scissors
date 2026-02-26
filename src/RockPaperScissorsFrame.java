@@ -53,7 +53,11 @@ public class RockPaperScissorsFrame extends JFrame
 
     ArrayList<Integer> playerChoiceStats = new ArrayList<>();
     String computerStrategyChoice;
-    int lowestIndex = 0;
+    int index = 0;
+    int leastUsed;
+    int indexOfLeastUsed;
+    int mostUsed;
+    int indexOfMostUsed;
 
     // HERE'S THE CODE THAT RUNS THE GAME
     public static void main(String[] args)
@@ -106,7 +110,7 @@ public class RockPaperScissorsFrame extends JFrame
         }
     }
 
-    private void computerChooses() {
+    private void computerChoosesStrategyAndMove() {
         Random randomGenerator = new Random();
         int strategyPercent = randomGenerator.nextInt(100);
         if (strategyPercent < 21) { // 10 percent (0-10)
@@ -117,9 +121,9 @@ public class RockPaperScissorsFrame extends JFrame
             mostUsedStrategy();
             computerStrategyChoice = "Computer: Most Used)";
         }
-        else if (strategyPercent < 61) {
-            lastUsedStrategy();
-            computerStrategyChoice = "Computer: Last Used)";
+        else if (strategyPercent < 61 && totalGamesCnt > 0) {
+                lastUsedStrategy();
+                computerStrategyChoice = "Computer: Last Used)";
         }
         else if (strategyPercent < 71) {
             Strategy randomStrategy = new RandomStrategy();
@@ -199,7 +203,7 @@ public class RockPaperScissorsFrame extends JFrame
         rockButton.addActionListener((ActionEvent aeRock) -> {
             playerMove = "R";
             playersLastMove = "R";
-            computerChooses();
+            computerChoosesStrategyAndMove();
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
             totalGamesCnt++;
@@ -219,16 +223,15 @@ public class RockPaperScissorsFrame extends JFrame
         paperButton.addActionListener((ActionEvent aeScissors) -> {
             playerMove = "P";
             playersLastMove = "P";
-            computerChooses();
+            computerChoosesStrategyAndMove();
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
-            playerChoiceStats.set(1, playerChoiceStats.get(1) + 1);
             totalGamesCnt++;
             playerWinsTA.setText(String.valueOf(playerWinsCnt));
             computerWinsTA.setText(String.valueOf(computerWinsCnt));
             tiesTA.setText(String.valueOf(tiesCnt));
             totalGamesTA.setText(String.valueOf(totalGamesCnt));
-            playerChoiceStats.set(0, playerChoiceStats.getFirst() + 1);
+            playerChoiceStats.set(1, playerChoiceStats.get(1) + 1);
         });
 
         tooBigScissors = new ImageIcon("src/scissors.jpg");
@@ -240,16 +243,15 @@ public class RockPaperScissorsFrame extends JFrame
         scissorsButton.addActionListener((ActionEvent ae1) -> {
             playerMove = "S";
             playersLastMove = "S";
-            computerChooses();
+            computerChoosesStrategyAndMove();
             determineAndPrintGameResult();
             displayTA.append(computerStrategyChoice + "\n");
-            playerChoiceStats.set(2, playerChoiceStats.get(2) + 1);
             totalGamesCnt++;
             playerWinsTA.setText(String.valueOf(playerWinsCnt));
             computerWinsTA.setText(String.valueOf(computerWinsCnt));
             tiesTA.setText(String.valueOf(tiesCnt));
             totalGamesTA.setText(String.valueOf(totalGamesCnt));
-            playerChoiceStats.set(0, playerChoiceStats.getFirst() + 1);
+            playerChoiceStats.set(2, playerChoiceStats.get(2) + 1);
         });
 
 
@@ -322,21 +324,21 @@ public class RockPaperScissorsFrame extends JFrame
     private void leastUsedStrategy() {
 
         if (!playerChoiceStats.isEmpty()) {
-            int leastUsed = Collections.min(playerChoiceStats);
+            leastUsed = Collections.min(playerChoiceStats);
 
-            for (int s = 1; s < playerChoiceStats.size(); s++){
-                int curValue = playerChoiceStats.get(s);
-                if (curValue < leastUsed) {
+            for (int index = 1; index < playerChoiceStats.size(); index++){
+                int curValue = playerChoiceStats.get(index);
+                if (curValue > leastUsed) {
                     leastUsed = curValue;
-                    lowestIndex = s;
+                    indexOfLeastUsed = index;
                 }
-                if (lowestIndex == 0) {
+                if (indexOfLeastUsed == 0) {
                     computerMove = "R";
                 }
-                if (lowestIndex == 1) {
+                if (indexOfLeastUsed == 1) {
                     computerMove = "P";
                 }
-                if (lowestIndex == 2){
+                if (indexOfLeastUsed == 2){
                     computerMove = "S";
                 }
             }
@@ -345,21 +347,21 @@ public class RockPaperScissorsFrame extends JFrame
 
     private void mostUsedStrategy() {
         if (!playerChoiceStats.isEmpty()) {
-            int leastUsed = Collections.max(playerChoiceStats);
+            mostUsed = Collections.max(playerChoiceStats);
 
-            for (int s = 1; s < playerChoiceStats.size(); s++){
-                int curValue = playerChoiceStats.get(s);
-                if (curValue > leastUsed) {
-                    leastUsed = curValue;
-                    lowestIndex = s;
+            for (index = 1; index < playerChoiceStats.size(); index++){
+                int curValue = playerChoiceStats.get(index);
+                if (curValue > mostUsed) {
+                    mostUsed = curValue;
+                    indexOfMostUsed = index;
                 }
-                if (lowestIndex == 0) {
+                if (indexOfMostUsed == 0) {
                     computerMove = "R";
                 }
-                if (lowestIndex == 1) {
+                if (indexOfMostUsed == 1) {
                     computerMove = "P";
                 }
-                if (lowestIndex == 2){
+                if (indexOfMostUsed == 2){
                     computerMove = "S";
                 }
             }
