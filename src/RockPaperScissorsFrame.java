@@ -70,6 +70,12 @@ public class RockPaperScissorsFrame extends JFrame
         });
     }
 
+    /**
+     * @author Sophia Broyles
+     * Adds rock, paper and scissors to ArrayList r_p_OR_s
+     * Adds rock, paper and scissors choices to arrayList playerChoiceStats
+     * Creates a Jframe that is centered in the computer screen
+     */
     public RockPaperScissorsFrame() {
         r_p_OR_s.add("rock");
         r_p_OR_s.add("paper");
@@ -110,6 +116,12 @@ public class RockPaperScissorsFrame extends JFrame
         }
     }
 
+    /**  computerChoosesStrategyAndMove()
+     * @author Sophia Broyles
+     * Uses a random generator to generate a number between -1 and 100 (0-99)
+     * Uses an if statement to define probability for what strategy will be chosen
+     * Chooses a strategy, updating computerMove, and updates variable "computerStrategyChoice"
+     */
     private void computerChoosesStrategyAndMove() {
         Random randomGenerator = new Random();
         int strategyPercent = randomGenerator.nextInt(100);
@@ -122,10 +134,10 @@ public class RockPaperScissorsFrame extends JFrame
             computerStrategyChoice = "Computer: Most Used)";
         }
         else if (strategyPercent < 61 && totalGamesCnt > 0) {
-                lastUsedStrategy();
-                computerStrategyChoice = "Computer: Last Used)";
+            lastUsedStrategy();
+            computerStrategyChoice = "Computer: Last Used)";
         }
-        else if (strategyPercent < 71) {
+        else if (strategyPercent < 91) {
             Strategy randomStrategy = new RandomStrategy();
             computerMove = randomStrategy.getMove(playerMove);
             computerStrategyChoice = "Computer: Random)";
@@ -137,6 +149,13 @@ public class RockPaperScissorsFrame extends JFrame
         }
     }
 
+    /**  createStatsPanel()
+     * @author Sophia Broyles
+     * Makes a panel of statistics panels with textareas and labels to display
+     * player wins, computer wins, ties, and total of games played
+     *
+     * Sets layout of statsPnl to a GridLayout
+     */
     private void createStatsPanel()
     {
         statsPnl = new JPanel();
@@ -176,7 +195,10 @@ public class RockPaperScissorsFrame extends JFrame
         statsPnl.add(totalGamesPnl);
     }
 
-
+    /**  createDisplayPanel()
+     * @author Sophia Broyles
+     * Makes a display panel with a big JTextArea
+     */
     private void createDisplayPanel()
     {
         displayPnl = new JPanel();                                             // initialize display panel
@@ -187,9 +209,20 @@ public class RockPaperScissorsFrame extends JFrame
         displayPnl.add(scrollbar);                                             // add scrollbar to display panel
     }
 
-
-    private void createControlPanel()
-    {
+    /**  createControlPanel()
+     * @author Sophia Broyles
+     * Makes a panel with a gridLayout for four buttons,
+     * rockButton, paperButton, scissorsButton, and quitButton
+     *
+     * Resizes images for buttons
+     *
+     * For each button except quit button, sets playerMove and playersLastMove,
+     * runs computerChoosesStrategyAndMove() and determineAndPrintGameResult(),
+     * appends computerStrategyChoice to display textarea, increases totalGamesCnt by 1,
+     * resets playerWinsCnt, computerWinsCnt, tiesCnt, and totalGamesCnt on the stats panel,
+     * and adds the player's choice to the playerChoiceStats ArrayList.
+     */
+    private void createControlPanel() {
         buttonPnl = new JPanel();
         buttonPnl.setLayout(new GridLayout(1, 4));
         buttonPnl.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
@@ -269,6 +302,15 @@ public class RockPaperScissorsFrame extends JFrame
 
     }
 
+    /**  determineAndPrintGameResult()
+     * @author Sophia Broyles
+     * Uses an if statement to figure out who won the round.
+     *
+     * For each case:
+     * increases count of result type,
+     * appends result to the display,
+     * and updates the statistics panel (statsPnl)
+     */
     private void determineAndPrintGameResult() {
         if (computerMove.equals("R") && playerMove.equals("R")) {
             tiesCnt++;
@@ -317,18 +359,26 @@ public class RockPaperScissorsFrame extends JFrame
         }
     }
 
+    /**
+     * @author Sophia Broyles
+     * Sets the computer's move to whatever the player's last move was.
+     */
     private void lastUsedStrategy() {
         computerMove = playersLastMove;
     }
 
+    /**  leastUsedStrategy()
+     * @author Sophia Broyles
+     * Sets computer's move to whatever the player has used the least.
+     */
     private void leastUsedStrategy() {
 
         if (!playerChoiceStats.isEmpty()) {
-            leastUsed = Collections.min(playerChoiceStats);
+            leastUsed = Collections.<Integer>min(playerChoiceStats);
 
-            for (int index = 1; index < playerChoiceStats.size(); index++){
+            for (index = 1; index < playerChoiceStats.size(); index++){
                 int curValue = playerChoiceStats.get(index);
-                if (curValue > leastUsed) {
+                if (leastUsed < curValue) {
                     leastUsed = curValue;
                     indexOfLeastUsed = index;
                 }
@@ -345,6 +395,10 @@ public class RockPaperScissorsFrame extends JFrame
         }
     }
 
+    /**  mostUsedStrategy()
+     * @author Sophia Broyles
+     * Sets computer's move to whatever the player has used the most.
+     */
     private void mostUsedStrategy() {
         if (!playerChoiceStats.isEmpty()) {
             mostUsed = Collections.max(playerChoiceStats);
