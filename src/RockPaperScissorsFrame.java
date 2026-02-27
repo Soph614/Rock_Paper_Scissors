@@ -52,7 +52,6 @@ public class RockPaperScissorsFrame extends JFrame {
 
     ArrayList<Integer> playerChoiceStats = new ArrayList<>();
     String computerStrategyChoice;
-    int index = 0;
     int leastUsed;
     int indexOfLeastUsed;
     int mostUsed;
