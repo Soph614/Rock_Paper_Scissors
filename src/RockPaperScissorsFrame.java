@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-public class RockPaperScissorsFrame extends JFrame
-{
+public class RockPaperScissorsFrame extends JFrame {
     JPanel mainPnl;
     JPanel displayPnl;
     JPanel statsPnl;
@@ -60,8 +59,7 @@ public class RockPaperScissorsFrame extends JFrame
     int indexOfMostUsed;
 
     // HERE'S THE CODE THAT RUNS THE GAME
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -98,6 +96,7 @@ public class RockPaperScissorsFrame extends JFrame
         mainPnl.add(buttonPnl, BorderLayout.SOUTH);
 
         add(mainPnl);
+
         {
             // CENTER FRAME IN SCREEN...CODE ADAPTED FROM CAY HORSTMANN
             Toolkit kit = Toolkit.getDefaultToolkit();
@@ -156,8 +155,7 @@ public class RockPaperScissorsFrame extends JFrame
      *
      * Sets layout of statsPnl to a GridLayout
      */
-    private void createStatsPanel()
-    {
+    private void createStatsPanel() {
         statsPnl = new JPanel();
         statsPnl.setLayout(new GridLayout(4, 1));
 
@@ -199,8 +197,7 @@ public class RockPaperScissorsFrame extends JFrame
      * @author Sophia Broyles
      * Makes a display panel with a big JTextArea
      */
-    private void createDisplayPanel()
-    {
+    private void createDisplayPanel() {
         displayPnl = new JPanel();                                             // initialize display panel
         displayTA = new JTextArea(14, 24);                       // set size of display -- is dependent on font and size of font!
         displayTA.setEditable(false);                                          // make sure the user can't edit the display
@@ -372,26 +369,16 @@ public class RockPaperScissorsFrame extends JFrame
      * Sets computer's move to whatever the player has used the least.
      */
     private void leastUsedStrategy() {
-
-        if (!playerChoiceStats.isEmpty()) {
-            leastUsed = Collections.<Integer>min(playerChoiceStats);
-
-            for (index = 1; index < playerChoiceStats.size(); index++){
-                int curValue = playerChoiceStats.get(index);
-                if (leastUsed < curValue) {
-                    leastUsed = curValue;
-                    indexOfLeastUsed = index;
-                }
-                if (indexOfLeastUsed == 0) {
-                    computerMove = "R";
-                }
-                if (indexOfLeastUsed == 1) {
-                    computerMove = "P";
-                }
-                if (indexOfLeastUsed == 2){
-                    computerMove = "S";
-                }
-            }
+        leastUsed = Collections.min(playerChoiceStats);
+        indexOfLeastUsed = playerChoiceStats.indexOf(leastUsed);
+        if (indexOfLeastUsed == 0) {
+            computerMove = "R";
+        }
+        if (indexOfLeastUsed == 1) {
+            computerMove = "P";
+        }
+        if (indexOfLeastUsed == 2){
+            computerMove = "S";
         }
     }
 
@@ -400,25 +387,16 @@ public class RockPaperScissorsFrame extends JFrame
      * Sets computer's move to whatever the player has used the most.
      */
     private void mostUsedStrategy() {
-        if (!playerChoiceStats.isEmpty()) {
-            mostUsed = Collections.max(playerChoiceStats);
-
-            for (index = 1; index < playerChoiceStats.size(); index++){
-                int curValue = playerChoiceStats.get(index);
-                if (curValue > mostUsed) {
-                    mostUsed = curValue;
-                    indexOfMostUsed = index;
-                }
-                if (indexOfMostUsed == 0) {
-                    computerMove = "R";
-                }
-                if (indexOfMostUsed == 1) {
-                    computerMove = "P";
-                }
-                if (indexOfMostUsed == 2){
-                    computerMove = "S";
-                }
-            }
+        mostUsed = Collections.max(playerChoiceStats);
+        indexOfMostUsed = playerChoiceStats.indexOf(mostUsed);
+        if (indexOfMostUsed == 0) {
+            computerMove = "R";
+        }
+        if (indexOfMostUsed == 1) {
+            computerMove = "P";
+        }
+        if (indexOfMostUsed == 2){
+            computerMove = "S";
         }
     }
 }
